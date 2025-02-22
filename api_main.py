@@ -9,7 +9,7 @@ def root():
     return {'message': "Hello World"}
 
 @app.get('/kmeans/')
-def kmeans:
+def kmeans():
     return ModifyJson()
 
 @app.get('/search/')
