@@ -1,8 +1,9 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
+from Models.Kmeans import KMeansGroups
+from search_q import json_data_dict
 from search_q import search_query
-from search_q import test_data_dict
 
 
 class Item(BaseModel):
@@ -33,7 +34,7 @@ def user_selection(item: Item):
     # Get all doc_ids that the user clicked on
     doc_ids = item.doc_ids
 
-    dados = test_data_dict
+    dados = json_data_dict
 
     for doc_id in doc_ids:
         if doc := dados.get(f"Doc{int(doc_id)-1}"):
@@ -42,3 +43,8 @@ def user_selection(item: Item):
     # print(dados)
 
     return {"message": "Success"}
+
+
+@app.get("/kmeans/")
+def kmeans():
+    return KMeansGroups()
