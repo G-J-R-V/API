@@ -1,12 +1,44 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+
 from search_q import search_query
+from search_q import test_data_dict
+
+
+class Item(BaseModel):
+    doc_ids: list[int]
+
 
 app = FastAPI()
 
-@app.get('/')
-def root():
-    return {'message': "Hello World"}
 
-@app.get('/search/')
-def search(query:str = ''):
-    return search_query(query)
+@app.get("/")
+def root():
+    return {"message": "Hello World"}
+
+
+@app.get("/search/")
+def search(query: str = ""):
+    if query == "":
+        return {"message": "Digite uma pesquisa"}
+    query_result = search_query(query)
+    if type(query_result) == str:
+        raise HTTPException(status_code=404, detail="Item not found")
+    return query_result
+
+
+@app.post("/user_selection/")
+def user_selection(item: Item):
+
+    # Get all doc_ids that the user clicked on
+    doc_ids = item.doc_ids
+
+    dados = test_data_dict
+
+    for doc_id in doc_ids:
+        if doc := dados.get(f"Doc{int(doc_id)-1}"):
+            doc["R"] = True
+
+    # print(dados)
+
+    return {"message": "Success"}
